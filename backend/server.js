@@ -8,14 +8,19 @@ app.use(cors());
 app.use(express.json());
 dotenv.config();
 const PORT = process.env.PORT || 3000;
-app.use("./input", express.static(path.join(__dirname, "input")));
+// app.use("./input", express.static(path.join(__dirname, "input")));
 app.use("/api/audio-separation", audioSeparationRoutes);
 
-
 const __dirname1 = path.resolve();
-if (process.env.NODE_ENV === 'production')  {
-	app.use('/', express.static(path.join(__dirname1, '/frontend
+if (process.env.NODE_ENV === "production") {
+  app.use("/", express.static(path.join(__dirname1, "/frontend/dist")));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname1, "frontend", "dist", "index.html"));
+  });
+} else {
+  app.get("/", (req, res) => {
+    res.send("API is running successfully...");
+  });
 }
-
 
 app.listen(PORT, () => console.log(`Server is running on PORT ${PORT}`));
