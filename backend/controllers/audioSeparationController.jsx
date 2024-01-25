@@ -21,11 +21,16 @@ const processAudio = asyncHandler((req, res) => {
             console.error(`Error: ${error.message}`);
             return res.status(500).json({ error: "Internal server error" });
           }
-          console.log(`Spleeter Output: ${stdout}`);
-          console.log(`Spleeter Error: ${stderr}`);
+         
           res.json({ message: "Separation completed" });
         }
       );
+      const timeout = setTimeout(() => {
+        console.error(
+          "Process timed out. Forcefully killing the child process."
+        );
+        childProcess.kill("SIGKILL"); // You can also try 'SIGTERM' or 'SIGINT'
+      }, 50000); // 50 seconds
     }
   });
 });
