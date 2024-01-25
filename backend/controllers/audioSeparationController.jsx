@@ -33,6 +33,8 @@ const processAudio = asyncHandler((req, res) => {
       }, 50000); // 50 seconds
     }
   });
+
+  res.json({ message: "Separation completed" });
 });
 
 module.exports = { processAudio };

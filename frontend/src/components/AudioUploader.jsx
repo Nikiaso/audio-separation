@@ -78,7 +78,8 @@ const AudioUploader = () => {
       const { data } = await axios.post(
         "http://localhost:3000/api/audio-separation/processAudio",
         { audio },
-        config
+        config,
+        console.log(audio)
       );
       toast({
         title: "Uploaded Audio!",
