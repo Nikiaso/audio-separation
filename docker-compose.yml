@@ -34,20 +34,6 @@ services:
       - "5173:5173"
     command: npm run dev
 
-  db:
-    image: postgres
-    container_name: db
-    restart: always
-    tty: true
-    volumes:
-      - ./data:/var/lib/postgresql/data
-    environment: 
-      - POSTGRES_PASSWORD=1234
-    ports: 
-      - "5432:5432"
-    networks: 
-      - node-network
-
   nginx:
     build: 
       context: nginx
