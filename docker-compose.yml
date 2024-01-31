@@ -1,26 +1,26 @@
 version: '3'
 
-services: 
+services:
 
-  back-end:
-    build: 
+  backend:
+    build:
       context: backend
-    container_name: back-end
+    container_name: backend
     working_dir: /usr/src/app
-    networks: 
+    networks:
       - node-network
-    volumes: 
+    volumes:
       - ./node:/usr/src/app
       - /usr/src/app/node_modules
     tty: true
-    ports: 
+    ports:
       - "3000:3000"
     command: npm run dev
 
-  front-end:
+  frontend:
     build: 
       context: frontend
-    container_name: front-end
+    container_name: frontend
     working_dir: /usr/src/app
     networks: 
       - node-network
@@ -43,9 +43,9 @@ services:
     networks: 
       - node-network
     depends_on:
-       - back-end
-       - front-end
-  
-networks: 
+       - backend
+       - frontend
+
+networks:
   node-network:
     driver: bridge
