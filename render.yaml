@@ -1,6 +1,7 @@
 services:
   - type: web
     name: backend-service
+    runtime: node
     envVars:
       - key: NODE_ENV
         value: production
