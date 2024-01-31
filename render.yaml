@@ -1,7 +1,7 @@
 services:
   - type: web
     name: backend-service
-    env:
+    envVars:
       - key: NODE_ENV
         value: production
       - key: CONDA_DIR
