@@ -1,0 +1,9 @@
+services:
+  - name: backend-service
+    env:
+      - key: NODE_ENV
+        value: production
+      - key: CONDA_DIR
+        value: /opt/conda
+    buildCommand: npm install && conda env create -f environment.yml
+    startCommand: npm run dev
