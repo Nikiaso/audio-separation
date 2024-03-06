@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react";
+import { useState, useRef } from "react";
 import {
   Button,
   FormControl,
   FormLabel,
   Input,
   Stack,
-  Text,
   useToast,
+  Spinner,
 } from "@chakra-ui/react";
 import axios from "axios";
-
+import { PiWaveformBold } from "react-icons/pi";
+import AudioWaveform from "./AudioWaveform";
+import ProcessedAudio from "./ProcessedAudio";
 const AudioUploader = () => {
   const [loading, setLoading] = useState(false);
-  const [audio, setAudio] = useState();
+  const [audio, setAudio] = useState(null);
+  const [isProcessed, setIsProcessed] = useState(false);
   const toast = useToast();
+  const inputFile = useRef(null);
+  const [processedAudioData, setProcessedAudioData] = useState(null);
   const uploadAudio = (audio) => {
     setLoading(true);
     if (audio === undefined) {
@@ -75,12 +80,15 @@ const AudioUploader = () => {
           "Content-type": "application/json",
         },
       };
-      const { data } = await axios.post(
-        "http://localhost:3000/api/audio-separation/processAudio",
-        { audio },
-        config,
-        console.log(audio)
-      );
+      await axios
+        .post(
+          "http://localhost:3000/api/audio-separation/processAudio",
+          { audio },
+          config
+        )
+        .then((res) => {
+          setProcessedAudioData(res);
+        });
       toast({
         title: "Uploaded Audio!",
         status: "success",
@@ -88,7 +96,8 @@ const AudioUploader = () => {
         isClosable: true,
         position: "bottom",
       });
-      localStorage.setItem("audioInfo", JSON.stringify(data));
+      setIsProcessed(true);
+      // localStorage.setItem("audioInfo", JSON.stringify(data));
       setLoading(false);
     } catch (err) {
       toast({
@@ -102,26 +111,52 @@ const AudioUploader = () => {
       setLoading(false);
     }
   };
-
+  if (loading) {
+    return (
+      <div>
+        <Spinner />
+      </div>
+    );
+  }
+  if (processedAudioData) {
+    console.log(processedAudioData);
+    console.log(processedAudioData.data.processedData[0]);
+    console.log(processedAudioData.data.processedData[1]);
+  }
   return (
     <Stack>
-      <FormControl id="audio">
-        <FormLabel>Upload audio file.</FormLabel>
-        <Input
-          type="file"
-          accept="audio/*"
-          onChange={(e) => uploadAudio(e.target.files[0])}
-        />
-      </FormControl>
+      <PiWaveformBold className="w-full h-24 mt-16" />
+      {audio ? (
+        <AudioWaveform audioURL={audio} />
+      ) : (
+        <>
+          <h1 className="text-center mt-6 text-4xl">Upload an audio file</h1>
+          <div className="w-1/8 flex justify-center m-auto my-9">
+            <FormControl id="audio" className="rounded-sm ml-7">
+              <FormLabel className=" bg-black text-white py-2 px-4 upload-label">
+                Upload
+              </FormLabel>
+              <Input
+                type="file"
+                accept="audio/*"
+                className="messed-input opacity-0"
+                ref={inputFile}
+                onChange={(e) => uploadAudio(e.target.files[0])}
+              />
+            </FormControl>
+          </div>
+        </>
+      )}
       <Stack spacing="6">
-        <Button
-          colorScheme="blue"
-          width="100%"
-          style={{ marginTop: 15 }}
-          onClick={submitHandler}
-        >
-          Process Audio
-        </Button>
+        {isProcessed && processedAudioData ? (
+          <ProcessedAudio
+            processedAudioData={processedAudioData.data.processedData}
+          />
+        ) : (
+          <Button width="100%" className="process-btn" onClick={submitHandler}>
+            Process Audio
+          </Button>
+        )}
       </Stack>
     </Stack>
   );
